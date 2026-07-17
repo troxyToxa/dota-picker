@@ -1,6 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dota Picker</title>
+    <style>
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 20px; }
+        .btn { padding: 20px; text-align: center; background: #333; color: white; border-radius: 8px; cursor: pointer; }
+    </style>
+</head>
 <body>
-    <h1>Привіт, це мій сайт!</h1>
+    <div class="grid" id="main-menu">
+        <div class="btn" onclick="showHeroes('str')">Сила</div>
+        <div class="btn" onclick="showHeroes('agi')">Спритність</div>
+        <div class="btn" onclick="showHeroes('int')">Інтелект</div>
+        <div class="btn" onclick="showHeroes('uni')">Універсальність</div>
+    </div>
+    
+    <div id="hero-list" class="grid" style="display:none; grid-template-columns: repeat(4, 1fr);">
+        <!-- Тут будуть іконки героїв -->
+        <button onclick="back()">Назад</button>
+    </div>
+
+    <script>
+        function showHeroes(type) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('hero-list').style.display = 'grid';
+            // Тут буде логіка завантаження героїв
+        }
+        function back() {
+            document.getElementById('main-menu').style.display = 'grid';
+            document.getElementById('hero-list').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
