@@ -4,33 +4,184 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dota Picker</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 20px; }
-        .btn { padding: 20px; text-align: center; background: #333; color: white; border-radius: 8px; cursor: pointer; }
+        body { 
+            font-family: sans-serif; 
+            background: #1a1a1a url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white; 
+            margin: 0; 
+            padding: 15px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+        }
+        /* Меню категорій по центру */
+        .grid-menu { 
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+            max-width: 300px;
+            margin: 60px auto 0 auto;
+        }
+        .btn { 
+            padding: 14px 20px; 
+            text-align: center; 
+            background: rgba(30, 30, 30, 0.75); 
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px;
+            backdrop-filter: blur(4px);
+        }
+        .btn:hover {
+            background: rgba(50, 50, 50, 0.85);
+        }
+        
+        /* Контейнер для списку героїв */
+        #hero-list {
+            display: none;
+            width: 100%;
+            padding-bottom: 70px;
+        }
+
+        /* Незалежна сітка іконок: рівно 6 колонок, як у грі */
+        .grid-heroes { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 10px; 
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-icon { 
+            width: 100%; 
+            aspect-ratio: 256 / 455; /* Вертикальні пропорції твоїх іконок */
+            background: transparent; 
+            border: none;
+            outline: none;
+            border-radius: 6px; 
+            object-fit: cover; 
+            cursor: pointer;
+            display: block;
+        }
+        .hero-icon:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* Кнопка "Назад" зафіксована чітко внизу екрана */
+        .back-btn {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 40px;
+            cursor: pointer; 
+            background: rgba(40, 40, 40, 0.85); 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .back-btn:hover {
+            background: rgba(60, 60, 60, 0.95);
+        }
     </style>
 </head>
 <body>
-    <div class="grid" id="main-menu">
+    <!-- Головне меню категорій -->
+    <div id="main-menu" class="grid-menu">
         <div class="btn" onclick="showHeroes('str')">Сила</div>
         <div class="btn" onclick="showHeroes('agi')">Спритність</div>
         <div class="btn" onclick="showHeroes('int')">Інтелект</div>
         <div class="btn" onclick="showHeroes('uni')">Універсальність</div>
     </div>
     
-    <div id="hero-list" class="grid" style="display:none; grid-template-columns: repeat(4, 1fr);">
-        <!-- Тут будуть іконки героїв -->
-        <button onclick="back()">Назад</button>
+    <!-- Сітка героїв -->
+    <div id="hero-list">
+        <div class="grid-heroes" id="heroes-container"></div>
+        <button class="back-btn" onclick="back()">Назад</button>
     </div>
 
     <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Повні списки героїв за атрибутами
+        const heroesData = {
+            str: [
+                'Alchemist', 'Axe', 'Bristleback', 'Centaur_Warrunner', 'Chaos_Knight', 'Clockwerk',
+                'Dawnbreaker', 'Doom', 'Dragon_Knight', 'Earth_Spirit', 'Earthshaker', 'Elder_Titan',
+                'Huskar', 'Kunkka', 'Largo', 'Legion_Commander', 'Lifestealer','Lycan', 
+                'Mars', 'Night_Stalker', 'Ogre_Magi', 'Omniknight', 'Phoenix', 'Primal_Beast', 
+                'Pudge', 'Slardar', 'Spirit_Breaker', 'Sven', 'Tidehunter', 'Timbersaw',
+                'Tiny', 'Treant_Protector', 'Tusk', 'Underlord', 'Undying', 'Wraith_King'
+            ],
+            agi: [
+                'Anti-Mage', 'Arc_Warden', 'Bloodseeker', 'Bounty_Hunter', 'Broodmother', 'Clinkz',
+                'Drow_Ranger', 'Ember_Spirit', 'Faceless_Void', 'Gyrocopter', 'Hoodwink', 'Juggernaut',
+                'Lone_Druid', 'Luna', 'Medusa', 'Meepo', 'Mirana', 'Monkey_King',
+                'Morphling', 'Naga_Siren', 'Phantom_Assassin', 'Phantom_Lancer', 'Razor', 'Riki',
+                'Shadow_Fiend', 'Slark', 'Sniper', 'Spectre', 'Templar_Assassin', 'Terrorblade',
+                'Troll_Warlord', 'Ursa', 'Vengeful_Spirit', 'Venomancer', 'Viper', 'Weaver'
+            ],
+            int: [
+                'Ancient_Apparition', 'Crystal_Maiden', 'Death_Prophet', 'Disruptor', 'Enchantress', 'Grimstroke',
+                'Invoker', 'Jakiro', 'Keeper_of_the_Light', 'Leshrac', 'Lich', 'Lina',
+                'Lion', 'Muerta', 'Nature_Prophet', 'Necrophos', 'Oracle', 'Outworld_Destroyer',
+                'Puck', 'Pugna', 'Queen_of_Pain', 'Rubick', 'Shadow_Shaman', 'Silencer',
+                'Skywrath_Mage', 'Storm_Spirit', 'Tinker', 'Warlock', 'Witch_Doctor', 'Zeus'
+            ],
+            uni: [
+                'Abaddon', 'Bane', 'Batrider', 'Beastmaster', 'Brewmaster', 'Chen',
+                'Clockwerk', 'Dark_Seer', 'Dark_Willow', 'Dazzle', 'Enigma', 'Enchantress',
+                'Faceless_Void', 'Io', 'Lone_Druid', 'Magnus', 'Marci', 'Nyx_Assassin',
+                'Pangolier', 'Phoenix', 'Sand_King', 'Snapfire', 'Techies', 'Vengeful_Spirit',
+                'Visage', 'Void_Spirit', 'Windranger', 'Winter_Wyvern'
+            ]
+        };
+
+        // Точна відповідність папок на твойому комп'ютері
+        const folderMapping = {
+            str: 'Strenght',
+            agi: 'Agility',
+            int: 'Intelligence',
+            uni: 'Universal'
+        };
+
         function showHeroes(type) {
             document.getElementById('main-menu').style.display = 'none';
-            document.getElementById('hero-list').style.display = 'grid';
-            // Тут буде логіка завантаження героїв
+            document.getElementById('hero-list').style.display = 'block';
+            
+            let container = document.getElementById('heroes-container');
+            container.innerHTML = ''; 
+            
+            let folderName = folderMapping[type];
+
+            if (heroesData[type]) {
+                heroesData[type].forEach(hero => {
+                    container.innerHTML += `<img src="${folderName}/${hero}.png" class="hero-icon" alt="${hero}" onclick="selectHero('${hero}')">`;
+                });
+            }
         }
+
         function back() {
-            document.getElementById('main-menu').style.display = 'grid';
+            document.getElementById('main-menu').style.display = 'flex';
             document.getElementById('hero-list').style.display = 'none';
+        }
+
+        function selectHero(heroName) {
+            alert(`Обрано: ${heroName}`);
         }
     </script>
 </body>
