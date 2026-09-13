@@ -134,8 +134,8 @@ function assignHero(team) {
 
     if (radiantComplete && direComplete) {
         document.body.classList.add('draft-ended');
-    }
         sendDraftToTranslator();
+    }
 }
 
 function updateSlots() {
@@ -199,6 +199,8 @@ document.addEventListener('click', function(e) {
     if (!e.target.closest('.slot-wrapper')) {
         document.querySelectorAll('.slot-wrapper').forEach(el => el.classList.remove('active-remove'));
     }
+});
+
 // Функція відправки драфту на розрахунок
 async function sendDraftToTranslator() {
     const radiantNames = radiantTeam.map(h => h ? h.name : null);
@@ -224,6 +226,4 @@ async function sendDraftToTranslator() {
         alert('Крок 2: ПОМИЛКА з\'єднання. Сервер 5001 не відповідає. Спробуйте запустити бота ще раз.');
     }
 }
-
-});
 
