@@ -1,0 +1,239 @@
+body { 
+    font-family: sans-serif; 
+    background: #1a1a1a url('../background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white; 
+    margin: 0; 
+    padding: 10px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Слоти команд (зверху і знизу) */
+.team-slots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 5px 0;
+}
+/* Стилі для слотів та хрестика видалення */
+.slot {
+    width: 48px;
+    height: 84px;
+    background: rgba(15, 15, 15, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.radiant-slots .slot { 
+    border: 2px solid #2ecc71; 
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 12px rgba(46, 204, 113, 0.4), 0 4px 8px rgba(0, 0, 0, 0.6); 
+}
+
+/* Стилі для назв команд (по-багатому / кіберспорт) */
+.team-title {
+    font-size: 18px;
+    font-weight: 900;
+    font-style: italic;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+.dire-title {
+    color: #ff7043;
+    text-shadow: 0 0 16px rgba(255, 87, 34, 0.9), 0 0 25px rgba(255, 112, 67, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
+    -webkit-text-stroke: 1px #000;
+}
+.radiant-title {
+    color: #4cd137;
+    text-shadow: 0 0 16px rgba(46, 204, 113, 0.9), 0 0 25px rgba(76, 209, 55, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
+    -webkit-text-stroke: 1px #000;
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+/* Головне меню категорій чітко по центру */
+.grid-menu { 
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+    width: 100%;
+    max-width: 260px;
+}
+.btn { 
+    padding: 14px 20px; 
+    text-align: center; 
+    background: rgba(30, 30, 30, 0.75); 
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px; 
+    cursor: pointer; 
+    font-size: 16px;
+    backdrop-filter: blur(4px);
+}
+.btn:hover {
+    background: rgba(50, 50, 50, 0.85);
+}
+
+/* Контейнер для списку героїв */
+#hero-list {
+    display: none;
+    width: 100%;
+    padding-bottom: 70px;
+}
+
+/* Незалежна сітка іконок: рівно 6 колонок, як у грі */
+.grid-heroes { 
+    display: grid; 
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 10px; 
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-icon { 
+    width: 100%; 
+    aspect-ratio: 256 / 455; /* Вертикальні пропорції твоїх іконок */
+    background: transparent; 
+    border: none;
+    outline: none;
+    border-radius: 6px; 
+    object-fit: cover; 
+    cursor: pointer;
+    display: block;
+}
+.hero-icon:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
+/* Кнопка "Назад" */
+.back-btn {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 35px;
+    cursor: pointer; 
+    background: rgba(40, 40, 40, 0.85); 
+    color: white; 
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    text-align: center;
+    font-size: 13px;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.dire-slots .slot { 
+    border: 2px solid #ff5722; 
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 87, 34, 0.5), 0 4px 8px rgba(0, 0, 0, 0.6); 
+}
+
+/* Міні-плашка видалення під слотом */
+.slot-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.remove-badge {
+    display: none;
+    position: absolute;
+    bottom: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 24px;
+    background: rgba(220, 20, 60, 0.95);
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.8);
+    z-index: 50;
+    border: 1px solid rgba(255,255,255,0.4);
+}
+.slot-wrapper.active-remove .remove-badge {
+    display: flex;
+}
+
+/* Фінальний стан драфту та банер VS */
+body {
+    transition: justify-content 0.8s ease-in-out;
+}
+body.draft-ended {
+    justify-content: center !important;
+    gap: 20px;
+}
+body.draft-ended #main-menu {
+    opacity: 0;
+    transform: scale(0.8);
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: all 0.6s ease-in-out;
+}
+.team-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    transition: transform 0.8s ease-in-out;
+}
+#vs-banner {
+    display: none;
+    font-size: 76px;
+    font-weight: 900;
+    font-style: italic;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 8px;
+    background: linear-gradient(180deg, #ffffff 0%, #fff2cc 30%, #e6ca65 65%, #b8860b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 1.5px #000000;
+    text-shadow: 
+        0 0 15px rgba(255, 255, 255, 0.8),
+        0 0 35px rgba(255, 180, 0, 0.9),
+        0 0 60px rgba(255, 120, 0, 0.6),
+        0 4px 10px rgba(0, 0, 0, 0.95);
+    transform: scale(0.3);
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin: 12px 0;
+    line-height: 1;
+}
+body.draft-ended #vs-banner {
+    display: block;
+    transform: scale(1);
+    opacity: 1;
+}
