@@ -206,7 +206,7 @@ async function sendDraftToTranslator() {
     const radiantNames = radiantTeam.map(h => h ? h.name : null);
     const direNames = direTeam.map(h => h ? h.name : null);
 
-    alert("Крок 1: Функція запущена. Спробуємо з'єднатися з сервером...");
+    console.log("📥 Відправка драфту на сервер...");
 
     try {
         const response = await fetch('http://localhost:5001/api/calculate_draft', {
@@ -215,15 +215,14 @@ async function sendDraftToTranslator() {
             body: JSON.stringify({ radiant: radiantNames, dire: direNames })
         });
 
-        alert("Крок 2: Сервер відповів. Обробляємо результат...");
         const result = await response.json();
         if (result.success) {
-            alert(`Крок 3: Успіх!\nПереможець: ${result.winner}\nШанс: ${result.win_chance}%`);
+            console.log("✅ Результат аналізу:", result);
         } else {
-            alert('Крок 3: Помилка сервера: ' + result.error);
+            console.error('❌ Помилка аналізу:', result.error);
         }
     } catch (error) {
-        alert('Крок 2: ПОМИЛКА з\'єднання. Сервер 5001 не відповідає. Спробуйте запустити бота ще раз.');
+        console.error('❌ Помилка з\'єднання з сервером:', error);
     }
 }
 
