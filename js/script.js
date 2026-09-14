@@ -134,6 +134,15 @@ function assignHero(team) {
 
     if (radiantComplete && direComplete) {
         document.body.classList.add('draft-ended');
+        
+        // Зупинка швидкого обертання через 1.5 секунди (перехід у плавну пульсацію)
+        setTimeout(() => {
+            const rotateEl = document.querySelector('.vs-rotate');
+            if (rotateEl) {
+                rotateEl.style.animation = 'none';
+            }
+        }, 1500);
+
         sendDraftToTranslator();
     }
 }

@@ -237,3 +237,33 @@ body.draft-ended #vs-banner {
     transform: scale(1);
     opacity: 1;
 }
+
+/* --- АНІМАЦІЯ VS (перенесена з тестового файлу) --- */
+.vs-scale {
+    animation: intro-scale 1.5s ease-out forwards;
+    opacity: 0;
+    transform: scale(0.1);
+}
+
+.vs-rotate {
+    animation: fast-rotate 0.25s linear infinite;
+}
+
+.vs-pulse {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes intro-scale {
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fast-rotate {
+    100% { transform: rotate(-360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
+    100% { transform: scale(1); }
+}
+
