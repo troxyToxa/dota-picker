@@ -135,6 +135,14 @@ function assignHero(team) {
     if (radiantComplete && direComplete) {
         document.body.classList.add('draft-ended');
         
+        // Примусовий перезапуск анімації обертання при повторному завершенні
+        const rotateEl = document.querySelector('.vs-rotate');
+        if (rotateEl) {
+            rotateEl.style.animation = 'none';
+            rotateEl.offsetHeight; // тригер перерахунку стилів (reflow)
+            rotateEl.style.animation = 'fast-rotate 0.25s linear infinite';
+        }
+
         // Зупинка швидкого обертання через 1.5 секунди (перехід у плавну пульсацію)
         setTimeout(() => {
             const rotateEl = document.querySelector('.vs-rotate');
@@ -199,6 +207,12 @@ function removeHero(team, index) {
 
     // Якщо драфт був завершений, знімаємо клас draft-ended
     document.body.classList.remove('draft-ended');
+
+    // Скидаємо стиль анімації обертання для наступного запуску
+    const rotateEl = document.querySelector('.vs-rotate');
+    if (rotateEl) {
+        rotateEl.style.animation = '';
+    }
 
     updateSlots();
 }
