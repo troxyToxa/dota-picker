@@ -226,16 +226,11 @@ body.draft-ended #main-menu {
         0 0 35px rgba(255, 180, 0, 0.9),
         0 0 60px rgba(255, 120, 0, 0.6),
         0 4px 10px rgba(0, 0, 0, 0.95);
-    transform: scale(0.3);
-    opacity: 0;
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     margin: 12px 0;
     line-height: 1;
 }
 body.draft-ended #vs-banner {
     display: block;
-    transform: scale(1);
-    opacity: 1;
 }
 
 /* --- АНІМАЦІЯ VS (перенесена з тестового файлу) --- */
