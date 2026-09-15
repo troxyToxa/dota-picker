@@ -218,7 +218,7 @@ body.draft-ended #vs-banner {
 
 /* Стилі тексту, градієнта та тіней перенесено на анімований елемент .vs-pulse */
 .vs-pulse {
-    font-size: 65px;
+    font-size: 70px;
     font-weight: 900;
     font-style: italic;
     font-family: 'Impact', 'Arial Black', sans-serif;
@@ -263,22 +263,22 @@ body.draft-ended #vs-banner {
 /* --- АНІМАЦІЯ УДАРУ З ВІДСОКОМ (для контейнерів команд) --- */
 @keyframes dire-impact {
     0%   { transform: translateY(0); }
-    45%  { transform: translateY(100px); }
-    62%  { transform: translateY(50px);  }
-    78%  { transform: translateY(100px); }
-    88%  { transform: translateY(55px); }
-    95%  { transform: translateY(100px); }
-    100% { transform: translateY(100px); }
+    45%  { transform: translateY(120px); }
+    62%  { transform: translateY(110px);  }
+    78%  { transform: translateY(120px); }
+    88%  { transform: translateY(115px); }
+    95%  { transform: translateY(120px); }
+    100% { transform: translateY(120px); }
 }
 
 @keyframes radiant-impact {
     0%   { transform: translateY(0); }
-    45%  { transform: translateY(-60px); }
-    62%  { transform: translateY(-50px);  }
-    78%  { transform: translateY(-60px); }
-    88%  { transform: translateY(-55px); }
-    95%  { transform: translateY(-60px); }
-    100% { transform: translateY(-60px); }
+    45%  { transform: translateY(-120px); }
+    62%  { transform: translateY(-110px);  }
+    78%  { transform: translateY(-120x); }
+    88%  { transform: translateY(-115px); }
+    95%  { transform: translateY(-120px); }
+    100% { transform: translateY(-120px); }
 }
 
 body.draft-ended #dire-container {
