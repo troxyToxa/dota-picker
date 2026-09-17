@@ -151,8 +151,91 @@ function assignHero(team) {
             }
         }, 1500);
 
+        // Запуск анімації відсотків вінрету після завершення основних анімацій (наприклад, через 800мс)
+        setTimeout(() => {
+            // Випадкові значення відсотка, сума = 100% (або генеруємо реалістичні для команд, напр. Radiant 35-65%)
+            const radiantWin = parseFloat((40 + Math.random() * 25).toFixed(2));
+            const direWin = parseFloat((100 - radiantWin).toFixed(2));
+            animateWinrates(radiantWin, direWin);
+        }, 1800);
+
         sendDraftToTranslator();
     }
+}
+
+// Багатоетапна анімація лічильників вінрету (із sandbox.html)
+function animateWinrates(targetR, targetD) {
+    const elR = document.getElementById('radiant-winrate');
+    const elD = document.getElementById('dire-winrate');
+
+    if (!elR || !elD) return;
+
+    elR.classList.add('visible');
+    elD.classList.add('visible');
+
+    const isWinR = targetR >= targetD;
+    const minT = isWinR ? targetD : targetR;
+    const maxT = isWinR ? targetR : targetD;
+
+    let curR = 0;
+    let curD = 0;
+
+    // Етап 1: Обидва йдуть разом до меншого значення (2500мс)
+    const dur1 = 2500;
+    let st1 = null;
+
+    function step1(ts) {
+        if (!st1) st1 = ts;
+        let p = Math.min((ts - st1) / dur1, 1);
+
+        curR = minT * p;
+        curD = minT * p;
+
+        elR.textContent = curR.toFixed(2) + '%';
+        elD.textContent = curD.toFixed(2) + '%';
+
+        if (p < 1) {
+            requestAnimationFrame(step1);
+        } else {
+            if (isWinR) {
+                curD = targetD;
+                elD.textContent = curD.toFixed(2) + '%';
+            } else {
+                curR = targetR;
+                elR.textContent = curR.toFixed(2) + '%';
+            }
+
+            // Етап 2: Ривок лідера до свого максимуму з ефектом пульсації
+            startPhase2(isWinR ? elR : elD, minT, maxT);
+        }
+    }
+
+    function startPhase2(winEl, curr, fin) {
+        winEl.classList.add('pulse');
+        setTimeout(() => winEl.classList.remove('pulse'), 400);
+
+        const dur2 = 600;
+        let st2 = null;
+
+        function step2(ts) {
+            if (!st2) st2 = ts;
+            let p = Math.min((ts - st2) / dur2, 1);
+            let ep = 1 - Math.pow(1 - p, 3);
+            let val = curr + (fin - curr) * ep;
+
+            winEl.textContent = val.toFixed(2) + '%';
+
+            if (p < 1) {
+                requestAnimationFrame(step2);
+            } else {
+                winEl.textContent = fin.toFixed(2) + '%';
+            }
+        }
+
+        requestAnimationFrame(step2);
+    }
+
+    requestAnimationFrame(step1);
 }
 
 function updateSlots() {

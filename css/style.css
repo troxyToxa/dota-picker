@@ -49,6 +49,21 @@ body {
 }
 
 /* Стилі для назв команд (по-багатому / кіберспорт) */
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 6px;
+    position: relative;
+}
+.dire-header {
+    /* Можна налаштовувати окремо для Dire, якщо потрібно */
+}
+.radiant-header {
+    margin-top: 6px;
+    margin-bottom: 0;
+}
 .team-title {
     font-size: 18px;
     font-weight: 900;
@@ -56,7 +71,35 @@ body {
     font-family: 'Impact', 'Arial Black', sans-serif;
     letter-spacing: 8px;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    margin-bottom: 0;
+}
+.winrate-counter {
+    font-size: 36px; /* Вдвічі більший за назви команд */
+    font-weight: 900;
+    font-style: italic;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 2px;
+    -webkit-text-stroke: 1.5px #000;
+    opacity: 0;
+    transition: transform 0.2s ease;
+    line-height: 1;
+}
+.dire-winrate {
+    /* Окремі налаштування позиції відсотка Dire якщо треба */
+}
+.radiant-winrate {
+    /* Окремі налаштування позиції відсотка Radiant якщо треба */
+}
+.winrate-counter.visible {
+    opacity: 1;
+}
+#dire-winrate {
+    color: #ff7043;
+    text-shadow: 0 0 16px rgba(255, 87, 34, 0.9), 0 0 25px rgba(255, 112, 67, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
+}
+#radiant-winrate {
+    color: #4cd137;
+    text-shadow: 0 0 16px rgba(46, 204, 113, 0.9), 0 0 25px rgba(76, 209, 55, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
 }
 .dire-title {
     color: #ff7043;
@@ -67,8 +110,14 @@ body {
     color: #4cd137;
     text-shadow: 0 0 16px rgba(46, 204, 113, 0.9), 0 0 25px rgba(76, 209, 55, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
     -webkit-text-stroke: 1px #000;
-    margin-top: 6px;
+    margin-top: 0;
     margin-bottom: 0;
+}
+
+/* Ефект ривку/пульсації для переможця */
+.pulse {
+    transform: scale(1.2);
+    text-shadow: 0 0 20px currentColor, 0 0 35px currentColor !important;
 }
 
 /* Головне меню категорій чітко по центру */
@@ -197,9 +246,12 @@ body.draft-ended #main-menu {
 .team-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
     width: 100%;
+    max-width: 270px; /* Ширина рівна 5 слотам (5 * 48px + 4 * 6px = 240 + 24 = 264px приблизно) */
+    margin: 0 auto;
+    position: relative;
     transition: transform 0.8s ease-in-out;
 }
 #vs-banner {
@@ -263,22 +315,22 @@ body.draft-ended #vs-banner {
 /* --- АНІМАЦІЯ УДАРУ З ВІДСОКОМ (для контейнерів команд) --- */
 @keyframes dire-impact {
     0%   { transform: translateY(0); }
-    45%  { transform: translateY(120px); }
-    62%  { transform: translateY(110px);  }
-    78%  { transform: translateY(120px); }
-    88%  { transform: translateY(115px); }
-    95%  { transform: translateY(120px); }
-    100% { transform: translateY(120px); }
+    45%  { transform: translateY(130px); }
+    62%  { transform: translateY(120px);  }
+    78%  { transform: translateY(130px); }
+    88%  { transform: translateY(125px); }
+    95%  { transform: translateY(130px); }
+    100% { transform: translateY(130px); }
 }
 
 @keyframes radiant-impact {
     0%   { transform: translateY(0); }
-    45%  { transform: translateY(-120px); }
-    62%  { transform: translateY(-110px);  }
-    78%  { transform: translateY(-120x); }
-    88%  { transform: translateY(-115px); }
-    95%  { transform: translateY(-120px); }
-    100% { transform: translateY(-120px); }
+    45%  { transform: translateY(-130px); }
+    62%  { transform: translateY(-120px);  }
+    78%  { transform: translateY(-130x); }
+    88%  { transform: translateY(-125px); }
+    95%  { transform: translateY(-130px); }
+    100% { transform: translateY(-130px); }
 }
 
 body.draft-ended #dire-container {
