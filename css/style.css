@@ -48,7 +48,7 @@ body {
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 12px rgba(46, 204, 113, 0.4), 0 4px 8px rgba(0, 0, 0, 0.6); 
 }
 
-/* Стилі для назв команд (по-багатому / кіберспорт) */
+/* Стилі для назв команд та нових блоків (RP та Favorite) */
 .team-header {
     display: flex;
     justify-content: space-between;
@@ -57,12 +57,10 @@ body {
     margin-bottom: 6px;
     position: relative;
 }
-.dire-header {
-    /* Можна налаштовувати окремо для Dire, якщо потрібно */
-}
-.radiant-header {
-    margin-top: 6px;
-    margin-bottom: 0;
+.team-title-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .team-title {
     font-size: 18px;
@@ -73,8 +71,67 @@ body {
     text-transform: uppercase;
     margin-bottom: 0;
 }
+.favorite-badge {
+    font-size: 11px;
+    font-weight: 900;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f1c40f;
+    text-shadow: 0 0 8px rgba(241, 196, 15, 0.8), 0 2px 4px rgba(0,0,0,0.9);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(241, 196, 15, 0.4);
+    margin-top: 2px;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+.favorite-badge.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.team-rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(20, 20, 20, 0.85);
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 2px 8px;
+    min-width: 36px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.4s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+.team-rating.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.rating-label {
+    font-size: 10px;
+    font-weight: 900;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    color: #aaa;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+.rating-value {
+    font-size: 15px;
+    font-weight: 900;
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
 .winrate-counter {
-    font-size: 36px; /* Вдвічі більший за назви команд */
+    font-size: 36px;
     font-weight: 900;
     font-style: italic;
     font-family: 'Impact', 'Arial Black', sans-serif;
@@ -83,12 +140,6 @@ body {
     opacity: 0;
     transition: transform 0.2s ease;
     line-height: 1;
-}
-.dire-winrate {
-    /* Окремі налаштування позиції відсотка Dire якщо треба */
-}
-.radiant-winrate {
-    /* Окремі налаштування позиції відсотка Radiant якщо треба */
 }
 .winrate-counter.visible {
     opacity: 1;

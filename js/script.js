@@ -151,14 +151,7 @@ function assignHero(team) {
             }
         }, 1500);
 
-        // Запуск анімації відсотків вінрету після завершення основних анімацій (наприклад, через 800мс)
-        setTimeout(() => {
-            // Випадкові значення відсотка, сума = 100% (або генеруємо реалістичні для команд, напр. Radiant 35-65%)
-            const radiantWin = parseFloat((40 + Math.random() * 25).toFixed(2));
-            const direWin = parseFloat((100 - radiantWin).toFixed(2));
-            animateWinrates(radiantWin, direWin);
-        }, 1800);
-
+        // Запуск відправки драфту на сервер (сервер поверне реальні дані, анімації запустяться у відповіді сервера)
         sendDraftToTranslator();
     }
 }
@@ -324,6 +317,41 @@ async function sendDraftToTranslator() {
         const result = await response.json();
         if (result.success) {
             console.log("✅ Результат аналізу:", result);
+            
+            // Розраховуємо реальні відсотки на основі radiant_score та dire_score
+            const totalScore = result.radiant_score + result.dire_score;
+            const radiantWinPct = totalScore > 0 ? (result.radiant_score / totalScore) * 100 : 50.0;
+            const direWinPct = totalScore > 0 ? (result.dire_score / totalScore) * 100 : 50.0;
+
+            // Визначаємо фаворита (хто має вищий скор або winner від сервака)
+            const isRadiantFav = result.winner === 'Radiant';
+
+            // Запускаємо анімацію вінретів та показ RP разом з FAVORITE через 800мс
+            setTimeout(() => {
+                animateWinrates(radiantWinPct, direWinPct);
+
+                // Відображення балів RP
+                const rRatingEl = document.getElementById('radiant-rating');
+                const dRatingEl = document.getElementById('dire-rating');
+                const rRatingContainer = document.getElementById('radiant-rating-container');
+                const dRatingContainer = document.getElementById('dire-rating-container');
+
+                if (rRatingEl) rRatingEl.textContent = result.radiant_raw_score;
+                if (dRatingEl) dRatingEl.textContent = result.dire_raw_score;
+                if (rRatingContainer) rRatingContainer.classList.add('visible');
+                if (dRatingContainer) dRatingContainer.classList.add('visible');
+
+                // Відображення плашки FAVORITE для команди-переможця
+                const rFav = document.getElementById('radiant-favorite');
+                const dFav = document.getElementById('dire-favorite');
+
+                if (isRadiantFav && rFav) {
+                    rFav.classList.add('visible');
+                } else if (!isRadiantFav && dFav) {
+                    dFav.classList.add('visible');
+                }
+            }, 800);
+
         } else {
             console.error('❌ Помилка аналізу:', result.error);
         }
