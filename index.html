@@ -1,60 +1,34 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dota Picker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="css/style.css?v=7">
-    <script src="js/script.js?v=4" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
 </head>
 <body>
-    <!-- Слоти Пітьма (Dire) зверху -->
     <div class="team-container" id="dire-container">
-        <div class="team-header">
-            <div class="team-title dire-title">DIRE</div>
-            <div class="winrate-counter" id="dire-winrate">0.00%</div>
-        </div>
+        <div class="team-title dire-title">DIRE</div>
         <div class="team-slots dire-slots" id="dire-slots">
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
+            <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
         </div>
     </div>
-
-    <!-- Банер VS по центру -->
-    <div id="vs-banner">
-        <div class="vs-scale">
-            <div class="vs-rotate">
-                <div class="vs-pulse">VS</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Головне меню категорій -->
+    <div id="vs-banner">VS</div>
     <div id="main-menu" class="grid-menu">
         <div class="btn" onclick="showHeroes('str')">Сила</div>
         <div class="btn" onclick="showHeroes('agi')">Спритність</div>
         <div class="btn" onclick="showHeroes('int')">Інтелект</div>
         <div class="btn" onclick="showHeroes('uni')">Універсальність</div>
     </div>
-    
-    <!-- Сітка героїв -->
     <div id="hero-list">
         <div class="grid-heroes" id="heroes-container"></div>
         <button class="back-btn" onclick="back()">Назад</button>
     </div>
-
-    <!-- Слоти Сяйво (Radiant) знизу -->
     <div class="team-container" id="radiant-container">
         <div class="team-slots radiant-slots" id="radiant-slots">
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
+            <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
         </div>
         <div class="team-title radiant-title">RADIANT</div>
     </div>
