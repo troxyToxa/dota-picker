@@ -5,32 +5,451 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dota Picker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/script.js" defer></script>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: #1a1a1a url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white; 
+            margin: 0; 
+            padding: 10px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Слоти команд (зверху і знизу) */
+        .team-slots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+            margin: 5px 0;
+        }
+        .slot {
+            width: 48px;
+            height: 84px;
+            background: rgba(15, 15, 15, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        .slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .radiant-slots .slot { 
+            border: 2px solid #2ecc71; 
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 12px rgba(46, 204, 113, 0.4), 0 4px 8px rgba(0, 0, 0, 0.6); 
+        }
+        .dire-slots .slot { 
+            border: 2px solid #ff5722; 
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 87, 34, 0.5), 0 4px 8px rgba(0, 0, 0, 0.6); 
+        }
+
+        /* Стилі для назв команд (по-багатому / кіберспорт) */
+        .team-title {
+            font-size: 18px;
+            font-weight: 900;
+            font-style: italic;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .dire-title {
+            color: #ff7043;
+            text-shadow: 0 0 16px rgba(255, 87, 34, 0.9), 0 0 25px rgba(255, 112, 67, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
+            -webkit-text-stroke: 1px #000;
+        }
+        .radiant-title {
+            color: #4cd137;
+            text-shadow: 0 0 16px rgba(46, 204, 113, 0.9), 0 0 25px rgba(76, 209, 55, 0.5), 0 3px 6px rgba(0, 0, 0, 0.95);
+            -webkit-text-stroke: 1px #000;
+            margin-top: 6px;
+            margin-bottom: 0;
+        }
+
+        /* Головне меню категорій чітко по центру */
+        .grid-menu { 
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+            width: 100%;
+            max-width: 260px;
+        }
+        .btn { 
+            padding: 14px 20px; 
+            text-align: center; 
+            background: rgba(30, 30, 30, 0.75); 
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px;
+            backdrop-filter: blur(4px);
+        }
+        .btn:hover {
+            background: rgba(50, 50, 50, 0.85);
+        }
+        
+        /* Контейнер для списку героїв */
+        #hero-list {
+            display: none;
+            width: 100%;
+            padding-bottom: 70px;
+        }
+
+        /* Незалежна сітка іконок: рівно 6 колонок, як у грі */
+        .grid-heroes { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 10px; 
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-icon { 
+            width: 100%; 
+            aspect-ratio: 256 / 455; /* Вертикальні пропорції твоїх іконок */
+            background: transparent; 
+            border: none;
+            outline: none;
+            border-radius: 6px; 
+            object-fit: cover; 
+            cursor: pointer;
+            display: block;
+        }
+        .hero-icon:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* Кнопка "Назад" */
+        .back-btn {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 35px;
+            cursor: pointer; 
+            background: rgba(40, 40, 40, 0.85); 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        /* Модальне вікно вибору команди (Сяйво / Пітьма) */
+        #team-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 240px;
+        }
+        .modal-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-radiant { background: #2ecc71; color: white; }
+        .btn-dire { background: #e74c3c; color: white; }
+        .btn-cancel { background: #555; color: white; }
+
+        /* Стилі для фінального стану драфту та VS */
+        body {
+            transition: justify-content 0.8s ease-in-out;
+        }
+        body.draft-ended {
+            justify-content: center !important;
+            gap: 20px;
+        }
+        body.draft-ended #main-menu {
+            opacity: 0;
+            transform: scale(0.8);
+            height: 0;
+            margin: 0;
+            overflow: hidden;
+            pointer-events: none;
+            transition: all 0.6s ease-in-out;
+        }
+        .team-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+            transition: transform 0.8s ease-in-out;
+        }
+        #vs-banner {
+            display: none;
+            font-size: 76px;
+            font-weight: 900;
+            font-style: italic;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            letter-spacing: 8px;
+            background: linear-gradient(180deg, #ffffff 0%, #fff2cc 30%, #e6ca65 65%, #b8860b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -webkit-text-stroke: 1.5px #000000;
+            text-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.8),
+                0 0 35px rgba(255, 180, 0, 0.9),
+                0 0 60px rgba(255, 120, 0, 0.6),
+                0 4px 10px rgba(0, 0, 0, 0.95);
+            transform: scale(0.3);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin: 12px 0;
+            line-height: 1;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            box-shadow: none !important;
+        }
+        body.draft-ended #vs-banner {
+            display: block;
+            transform: scale(1);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
+    <!-- Слоти Пітьма (Dire) зверху -->
     <div class="team-container" id="dire-container">
         <div class="team-title dire-title">DIRE</div>
-        <div class="team-slots dire-slots" id="dire-slots">
-            <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+        <div class="team-slots dire-slots" id="dire-slots" style="display: flex; gap: 6px; justify-content: center; width: 100%; max-width: 400px;">
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
         </div>
     </div>
+
+    <!-- Банер VS по центру при завершенні -->
     <div id="vs-banner">VS</div>
+
+    <!-- Головне меню категорій -->
     <div id="main-menu" class="grid-menu">
         <div class="btn" onclick="showHeroes('str')">Сила</div>
         <div class="btn" onclick="showHeroes('agi')">Спритність</div>
         <div class="btn" onclick="showHeroes('int')">Інтелект</div>
         <div class="btn" onclick="showHeroes('uni')">Універсальність</div>
     </div>
+    
+    <!-- Сітка героїв -->
     <div id="hero-list">
         <div class="grid-heroes" id="heroes-container"></div>
         <button class="back-btn" onclick="back()">Назад</button>
     </div>
+
+    <!-- Слоти Сяйво (Radiant) знизу -->
     <div class="team-container" id="radiant-container">
-        <div class="team-slots radiant-slots" id="radiant-slots">
-            <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+        <div class="team-slots radiant-slots" id="radiant-slots" style="display: flex; gap: 6px; justify-content: center; width: 100%; max-width: 400px;">
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
         </div>
         <div class="team-title radiant-title">RADIANT</div>
     </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Повні списки героїв за атрибутами
+        const heroesData = {
+            str: [
+                'Alchemist', 'Axe', 'Bristleback', 'Centaur_Warrunner', 'Chaos_Knight', 'Clockwerk',
+                'Dawnbreaker', 'Doom', 'Dragon_Knight', 'Earth_Spirit', 'Earthshaker', 'Elder_Titan',
+                'Huskar', 'Kunkka', 'Largo', 'Legion_Commander', 'Lifestealer','Lycan', 
+                'Mars', 'Night_Stalker', 'Ogre_Magi', 'Omniknight', 'Phoenix', 'Primal_Beast', 
+                'Pudge', 'Slardar', 'Spirit_Breaker', 'Sven', 'Tidehunter', 'Timbersaw',
+                'Tiny', 'Treant_Protector', 'Tusk', 'Underlord', 'Undying', 'Wraith_King'
+            ],
+            agi: [
+                'Anti-Mage',  'Bloodseeker', 'Bounty_Hunter', 'Broodmother', 'Clinkz',
+                'Drow_Ranger', 'Ember_Spirit', 'Faceless_Void', 'Gyrocopter', 'Hoodwink', 'Juggernaut',
+                'Kez', 'Lone_Druid', 'Luna', 'Medusa', 'Meepo', 'Mirana', 'Monkey_King',
+                'Morphling', 'Naga_Siren', 'Phantom_Assassin', 'Phantom_Lancer', 'Razor', 'Riki',
+                'Shadow_Fiend', 'Slark', 'Sniper', 'Spectre', 'Templar_Assassin', 'Terrorblade',
+                'Troll_Warlord', 'Ursa', 'Vengeful_Spirit',  'Viper', 'Weaver'
+            ],
+            int: [
+                'Ancient_Apparition', 'Chen', 'Crystal_Maiden', 'Dark_Seer', 'Dark_Willow', 'Disruptor', 'Enchantress', 'Grimstroke',
+                'Invoker', 'Jakiro', 'Keeper_of_the_Light', 'Leshrac', 'Lich', 'Lina',
+                'Lion', 'Muerta', 'Necrophos', 'Oracle', 'Outworld_Destroyer',
+                'Puck', 'Pugna', 'Queen_of_Pain', 'Ringmaster', 'Rubick', 'Shadow_Demon', 'Shadow_Shaman', 'Silencer',
+                'Skywrath_Mage', 'Storm_Spirit', 'Tinker', 'Warlock', 'Winter_Wyvern', 'Witch_Doctor', 'Zeus'
+            ],
+            uni: [
+                'Abaddon', 'Arc_Warden', 'Bane', 'Batrider', 'Beastmaster', 'Brewmaster',
+                'Dazzle', 'Death_Prophet', 'Enigma',
+                'Io', 'Magnus', 'Marci', 'Natures_Prophet', 'Nyx_Assassin',
+                'Pangolier', 'Sand_King', 'Snapfire', 'Techies',
+                'Venomancer', 'Visage', 'Void_Spirit', 'Windranger', 
+            ]
+        };
+
+        // Точна відповідність папок на твойому комп'ютері
+        const folderMapping = {
+            str: 'Strenght',
+            agi: 'Agility',
+            int: 'Intelligence',
+            uni: 'Universal'
+        };
+
+        let radiantTeam = [null, null, null, null, null];
+        let direTeam = [null, null, null, null, null];
+        let selectedHero = null;
+        let selectedFolder = null;
+
+        function showHeroes(type) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('hero-list').style.display = 'block';
+            
+            let container = document.getElementById('heroes-container');
+            container.innerHTML = ''; 
+            
+            let folderName = folderMapping[type];
+
+            if (heroesData[type]) {
+                heroesData[type].forEach(hero => {
+                    container.innerHTML += `<img src="${folderName}/${hero}.png" class="hero-icon" alt="${hero}" onclick="openModal('${hero}', '${folderName}')">`;
+                });
+            }
+        }
+
+        function back() {
+            document.getElementById('main-menu').style.display = 'flex';
+            document.getElementById('hero-list').style.display = 'none';
+        }
+
+        function openModal(heroName, folderName) {
+            selectedHero = heroName;
+            selectedFolder = folderName;
+            let modalHtml = `
+                <div id="team-modal" style="display:flex; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); justify-content:center; align-items:center; z-index:1000; backdrop-filter:blur(5px);">
+                    <div style="background:#222; padding:20px; border-radius:10px; border:1px solid rgba(255,255,255,0.2); text-align:center; display:flex; flex-direction:column; gap:12px; min-width:240px;">
+                        <h3 style="margin:0 0 10px 0; color:white;">Обрати: ${heroName}</h3>
+                        <button style="padding:12px; border:none; border-radius:6px; font-size:16px; cursor:pointer; font-weight:bold; background:#2ecc71; color:white;" onclick="assignHero('radiant')">Сяйво (Radiant)</button>
+                        <button style="padding:12px; border:none; border-radius:6px; font-size:16px; cursor:pointer; font-weight:bold; background:#e74c3c; color:white;" onclick="assignHero('dire')">Пітьма (Dire)</button>
+                        <button style="padding:12px; border:none; border-radius:6px; font-size:16px; cursor:pointer; font-weight:bold; background:#555; color:white;" onclick="closeModal()">Скасувати</button>
+                    </div>
+                </div>
+            `;
+            let div = document.createElement('div');
+            div.id = 'dynamic-modal';
+            div.innerHTML = modalHtml;
+            document.body.appendChild(div);
+        }
+
+        function closeModal() {
+            let modal = document.getElementById('dynamic-modal');
+            if (modal) modal.remove();
+            selectedHero = null;
+            selectedFolder = null;
+        }
+
+        function assignHero(team) {
+            if (!selectedHero) return;
+
+            // Перевірка, чи герой вже вибраний у будь-якій команді
+            let isAlreadyPicked = radiantTeam.some(h => h && h.name === selectedHero) || 
+                                  direTeam.some(h => h && h.name === selectedHero);
+            if (isAlreadyPicked) {
+                alert('Цей герой вже обраний!');
+                closeModal();
+                return;
+            }
+
+            let heroObj = { name: selectedHero, folder: selectedFolder };
+
+            if (team === 'radiant') {
+                let idx = radiantTeam.indexOf(null);
+                if (idx !== -1) {
+                    radiantTeam[idx] = heroObj;
+                } else {
+                    alert('Усі слоти Radiant заповнені!');
+                }
+            } else if (team === 'dire') {
+                let idx = direTeam.indexOf(null);
+                if (idx !== -1) {
+                    direTeam[idx] = heroObj;
+                } else {
+                    alert('Усі слоти Dire заповнені!');
+                }
+            }
+
+            updateSlots();
+            closeModal();
+            back();
+
+            // Перевірка завершення драфту (всі 10 слотів заповнені)
+            let radiantComplete = radiantTeam.every(h => h !== null);
+            let direComplete = direTeam.every(h => h !== null);
+
+            if (radiantComplete && direComplete) {
+                document.body.classList.add('draft-ended');
+            }
+        }
+
+        function updateSlots() {
+            let radiantContainer = document.getElementById('radiant-slots');
+            radiantContainer.innerHTML = radiantTeam.map(hero => {
+                if (hero) {
+                    return `<div class="slot"><img src="${hero.folder}/${hero.name}.png" alt="${hero.name}"></div>`;
+                }
+                return `<div class="slot"></div>`;
+            }).join('');
+
+            let direContainer = document.getElementById('dire-slots');
+            direContainer.innerHTML = direTeam.map(hero => {
+                if (hero) {
+                    return `<div class="slot"><img src="${hero.folder}/${hero.name}.png" alt="${hero.name}"></div>`;
+                }
+                return `<div class="slot"></div>`;
+            }).join('');
+        }
+    </script>
 </body>
 </html>
