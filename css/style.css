@@ -93,6 +93,12 @@ body {
     transform: scale(1);
 }
 
+/* FAVORITE вище заголовка тім RADIANT — дзеркальне розташування */
+.radiant-header .favorite-badge {
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
 .team-rating {
     display: flex;
     flex-direction: column;
