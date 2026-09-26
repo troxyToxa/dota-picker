@@ -6,18 +6,18 @@ const heroesData = {
     str: [
         'Alchemist', 'Axe', 'Bristleback', 'Centaur_Warrunner', 'Chaos_Knight', 'Clockwerk',
         'Dawnbreaker', 'Doom', 'Dragon_Knight', 'Earth_Spirit', 'Earthshaker', 'Elder_Titan',
-        'Huskar', 'Kunkka', 'Largo', 'Legion_Commander', 'Lifestealer','Lycan', 
-        'Mars', 'Night_Stalker', 'Ogre_Magi', 'Omniknight', 'Phoenix', 'Primal_Beast', 
+        'Huskar', 'Kunkka', 'Largo', 'Legion_Commander', 'Lifestealer', 'Lycan',
+        'Mars', 'Night_Stalker', 'Ogre_Magi', 'Omniknight', 'Phoenix', 'Primal_Beast',
         'Pudge', 'Slardar', 'Spirit_Breaker', 'Sven', 'Tidehunter', 'Timbersaw',
         'Tiny', 'Treant_Protector', 'Tusk', 'Underlord', 'Undying', 'Wraith_King'
     ],
     agi: [
-        'Anti-Mage',  'Bloodseeker', 'Bounty_Hunter', 'Broodmother', 'Clinkz',
+        'Anti-Mage', 'Bloodseeker', 'Bounty_Hunter', 'Broodmother', 'Clinkz',
         'Drow_Ranger', 'Ember_Spirit', 'Faceless_Void', 'Gyrocopter', 'Hoodwink', 'Juggernaut',
         'Kez', 'Lone_Druid', 'Luna', 'Medusa', 'Meepo', 'Mirana', 'Monkey_King',
         'Morphling', 'Naga_Siren', 'Phantom_Assassin', 'Phantom_Lancer', 'Razor', 'Riki',
         'Shadow_Fiend', 'Slark', 'Sniper', 'Spectre', 'Templar_Assassin', 'Terrorblade',
-        'Troll_Warlord', 'Ursa', 'Vengeful_Spirit',  'Viper', 'Weaver'
+        'Troll_Warlord', 'Ursa', 'Vengeful_Spirit', 'Viper', 'Weaver'
     ],
     int: [
         'Ancient_Apparition', 'Chen', 'Crystal_Maiden', 'Dark_Seer', 'Dark_Willow', 'Disruptor', 'Enchantress', 'Grimstroke',
@@ -31,7 +31,7 @@ const heroesData = {
         'Dazzle', 'Death_Prophet', 'Enigma',
         'Io', 'Magnus', 'Marci', 'Natures_Prophet', 'Nyx_Assassin',
         'Pangolier', 'Sand_King', 'Snapfire', 'Techies',
-        'Venomancer', 'Visage', 'Void_Spirit', 'Windranger', 
+        'Venomancer', 'Visage', 'Void_Spirit', 'Windranger',
     ]
 };
 
@@ -50,10 +50,10 @@ let selectedFolder = null;
 function showHeroes(type) {
     document.getElementById('main-menu').style.display = 'none';
     document.getElementById('hero-list').style.display = 'block';
-    
+
     let container = document.getElementById('heroes-container');
-    container.innerHTML = ''; 
-    
+    container.innerHTML = '';
+
     let folderName = folderMapping[type];
 
     if (heroesData[type]) {
@@ -98,8 +98,8 @@ function assignHero(team) {
     if (!selectedHero) return;
 
     // Перевірка, чи герой вже вибраний у будь-якій команді
-    let isAlreadyPicked = radiantTeam.some(h => h && h.name === selectedHero) || 
-                          direTeam.some(h => h && h.name === selectedHero);
+    let isAlreadyPicked = radiantTeam.some(h => h && h.name === selectedHero) ||
+        direTeam.some(h => h && h.name === selectedHero);
     if (isAlreadyPicked) {
         alert('Цей герой вже обраний!');
         closeModal();
@@ -134,7 +134,7 @@ function assignHero(team) {
 
     if (radiantComplete && direComplete) {
         document.body.classList.add('draft-ended');
-        
+
         // Примусовий перезапуск анімації обертання при повторному завершенні
         const rotateEl = document.querySelector('.vs-rotate');
         if (rotateEl) {
@@ -266,7 +266,7 @@ function updateSlots() {
 function handleSlotClick(team, index) {
     // Закрити всі інші відкриті плашки видалення
     document.querySelectorAll('.slot-wrapper').forEach(el => el.classList.remove('active-remove'));
-    
+
     let wrapperId = `${team}-wrapper-${index}`;
     let wrapper = document.getElementById(wrapperId);
     if (wrapper) {
@@ -294,7 +294,7 @@ function removeHero(team, index) {
 }
 
 // Закриття плашки видалення при кліку будь-де поза слотами
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     if (!e.target.closest('.slot-wrapper')) {
         document.querySelectorAll('.slot-wrapper').forEach(el => el.classList.remove('active-remove'));
     }
@@ -308,7 +308,7 @@ async function sendDraftToTranslator() {
     console.log("📥 Відправка драфту на сервер...");
 
     try {
-        const response = await fetch('http://localhost:5001/api/calculate_draft', {
+        const response = await fetch('https://outright-icky-coastland.ngrok-free.dev/api/calculate_draft', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ radiant: radiantNames, dire: direNames })
@@ -317,7 +317,7 @@ async function sendDraftToTranslator() {
         const result = await response.json();
         if (result.success) {
             console.log("✅ Результат аналізу:", result);
-            
+
             // Розраховуємо реальні відсотки на основі radiant_score та dire_score
             const totalScore = result.radiant_score + result.dire_score;
             const radiantWinPct = totalScore > 0 ? (result.radiant_score / totalScore) * 100 : 50.0;
