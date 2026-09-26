@@ -52,10 +52,15 @@ body {
 .team-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
     width: 100%;
     margin-bottom: 6px;
     position: relative;
+}
+.dire-header {
+    align-items: flex-start;
+}
+.radiant-header {
+    align-items: flex-end;
 }
 .team-title-group {
     display: flex;
@@ -70,6 +75,7 @@ body {
     letter-spacing: 8px;
     text-transform: uppercase;
     margin-bottom: 0;
+    line-height: 1;
 }
 .favorite-badge {
     font-size: 11px;
@@ -139,7 +145,7 @@ body {
     -webkit-text-stroke: 1.5px #000;
     opacity: 0;
     transition: transform 0.2s ease;
-    line-height: 1;
+    line-height: 0.85;
 }
 .winrate-counter.visible {
     opacity: 1;
